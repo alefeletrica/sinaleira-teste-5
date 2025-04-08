@@ -75,26 +75,23 @@
 
   <div id="status">🔄 Conectando ao broker...</div>
 
-  <!-- Imagem do trem centralizada e piscando -->
   <img id="trem" src="trementrando.webp" alt="Trem entrando">
 
   <script>
-    // Configurações MQTT
     const options = {
-      username: "alef_claro11",
+      username: "a212269@dac.unicamp.br",
       password: "the5650@P",
       clean: true,
       connectTimeout: 4000,
       reconnectPeriod: 4000,
     };
 
-    // Conexão com o HiveMQ Cloud
-    const client = mqtt.connect("wss://def46994eb794713adf8c0e7425db950.s1.eu.hivemq.cloud:8884/mqtt", options);
-    const topic = "alef_claro11/teste";
+    const client = mqtt.connect("ws://maqiatto.com:8883/mqtt", options);
+    const topic = "a212269@dac.unicamp.br/led";
 
     client.on("connect", () => {
-      console.log("✅ Conectado ao broker MQTT");
-      document.getElementById("status").textContent = "✅ Conectado ao broker MQTT!";
+      console.log("✅ Conectado ao broker Maqiatto");
+      document.getElementById("status").textContent = "✅ Conectado ao broker!";
     });
 
     client.on("error", (err) => {
