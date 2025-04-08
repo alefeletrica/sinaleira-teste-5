@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Sinaleira BLOCO A - Metrô-SP</title>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 30px;
+    }
+    h1 {
+      color: #333;
+      margin-top: 10px;
+    }
+    button {
+      font-size: 20px;
+      padding: 10px 25px;
+      margin: 15px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background-color: #007bff;
+      color: white;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #status {
+      margin-top: 30px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .blink {
+      animation: blink-animation 1s steps(2, start) infinite;
+    }
+
+    @keyframes blink-animation {
+      50% {
+        opacity: 0;
+      }
+    }
+
+    #trem {
+      margin: 20px auto 0 auto;
+      height: 100px;
+      display: none;
+      display: block;
+    }
+
+    .img-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .img-container img:first-child {
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="img-container">
+    <img src="metro.jpg" alt="Símbolo Metrô-SP">
+  </div>
+
+  <h1>Sinaleira BLOCO A - Metrô-SP</h1>
+  <button onclick="sendCommand('on')"> 🔴 Ligar SINALEIRA</button>
+  <button onclick="sendCommand('off')"> ⚫ Desligar SINALEIRA</button>
+
+  <div id="status">🔄 Conectando ao broker...</div>
+
+  <!-- Imagem do trem centralizada e piscando -->
+  <img id="trem" src="trementrando.webp" alt="Trem entrando">
+
+  <script>
+    // Configurações MQTT
+    const options = {
+      username: "alef_claro11",
+      password: "the5650@P",
+      clean: true,
+      connectTimeout: 4000,
+      reconnectPeriod: 4000,
+    };
+
+    // Conexão com o HiveMQ Cloud
+    const client = mqtt.connect("wss://def46994eb794713adf8c0e7425db950.s1.eu.hivemq.cloud:8884/mqtt", options);
+    const topic = "alef_claro11/teste";
+
+    client.on("connect", () => {
+      console.log("✅ Conectado ao broker MQTT");
+      document.getElementById("status").textContent = "✅ Conectado ao broker MQTT!";
+    });
+
+    client.on("error", (err) => {
+      console.error("❌ Erro na conexão:", err);
+      document.getElementById("status").textContent = "❌ Erro ao conectar: " + err.message;
+    });
+
+    function sendCommand(cmd) {
+      let simbolo = cmd === "on" ? "🔴" : "⚫";
+      if (client.connected) {
+        client.publish(topic, cmd);
+        document.getElementById("status").textContent = `${simbolo} Sinaleira ${cmd === "on" ? "LIGADA" : "DESLIGADA"}`;
+        toggleTrem(cmd === "on");
+      } else {
+        document.getElementById("status").textContent = "⚠️ Broker desconectado!";
+        toggleTrem(false);
+      }
+    }
+
+    function toggleTrem(show) {
+      const trem = document.getElementById("trem");
+      if (show) {
+        trem.style.display = "block";
+        trem.classList.add("blink");
+      } else {
+        trem.style.display = "none";
+        trem.classList.remove("blink");
+      }
+    }
+  </script>
+</body>
+</html>
